@@ -1,7 +1,8 @@
 package deloitte.bootcamp.controller;
 
-import deloitte.bootcamp.model.Produto;
-import deloitte.bootcamp.repository.ProdutoRepository;
+import deloitte.bootcamp.dto.ProdutoRequestDTO;
+import deloitte.bootcamp.dto.ProdutoResponseDTO;
+import deloitte.bootcamp.service.ProdutoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,10 @@ import java.util.List;
 @RequestMapping("/produtos")
 public class ProdutoController {
 
-    private final ProdutoRepository produtoRepository;
+    private final ProdutoService produtoService;
 
-    public ProdutoController(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
+    public ProdutoController(ProdutoService produtoService) {
+        this.produtoService = produtoService;
     }
 
     @GetMapping("/hello")
@@ -24,40 +25,31 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listar() {
-        return ResponseEntity.ok(produtoRepository.findAll());
+    public ResponseEntity<List<ProdutoResponseDTO>> listar() {
+        return ResponseEntity.ok(produtoService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto com ID: " + id + " Não Encontrado.")));
+    public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(produtoService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Produto> criar(@RequestBody Produto produto) {
-        return new ResponseEntity<>(produtoRepository.save(produto), HttpStatus.CREATED);
+    public ResponseEntity<ProdutoResponseDTO> criar(@RequestBody ProdutoRequestDTO produto) {
+        ProdutoResponseDTO produtoSalvo = produtoService.salvar(produto);
+        return new ResponseEntity<>(produtoSalvo, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody Produto produto) {
-        return produtoRepository.findById(id)
-                .map(produtoExistente -> {
-                    produtoExistente.setNome(produto.getNome());
-                    produtoExistente.setPreco(produto.getPreco());
-                    produtoRepository.save(produtoExistente);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-                })
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+    public ResponseEntity<ProdutoResponseDTO> atualizar(@PathVariable Long id, @RequestBody ProdutoRequestDTO produtoRequestDTO) {
+        ProdutoResponseDTO produtoAtualizado = produtoService.atualizar(id, produtoRequestDTO);
+        return ResponseEntity.ok(produtoAtualizado);
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!produtoRepository.existsById(id)){
-            throw new RuntimeException("Produto Não Encontrado");
-        }
-        produtoRepository.deleteById(id);
+        produtoService.deletar(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
