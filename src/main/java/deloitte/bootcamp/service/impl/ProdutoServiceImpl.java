@@ -1,11 +1,14 @@
-package deloitte.bootcamp.service;
+package deloitte.bootcamp.service.impl;
 
 import deloitte.bootcamp.dto.ProdutoRequestDTO;
 import deloitte.bootcamp.dto.ProdutoResponseDTO;
 import deloitte.bootcamp.exception.ProdutoNaoEncontradoException;
+import deloitte.bootcamp.exception.ValidacaoException;
 import deloitte.bootcamp.mapper.ProdutoMapper;
 import deloitte.bootcamp.model.Produto;
 import deloitte.bootcamp.repository.ProdutoRepository;
+import deloitte.bootcamp.service.ProdutoService;
+import deloitte.bootcamp.service.ProdutoValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,18 +19,21 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final ProdutoMapper produtoMapper;
+    private final List<ProdutoValidator> validators;
 
-    public ProdutoServiceImpl(ProdutoRepository produtoRepository, ProdutoMapper produtoMapper) {
+    public ProdutoServiceImpl(ProdutoRepository produtoRepository, ProdutoMapper produtoMapper, List<ProdutoValidator> validators) {
         this.produtoRepository = produtoRepository;
         this.produtoMapper = produtoMapper;
+        this.validators = validators;
     }
 
     @Override
     public ProdutoResponseDTO salvar(ProdutoRequestDTO produtoRequestDTO) {
-
         Produto produto = produtoMapper.toProduto(produtoRequestDTO);
-        Produto produtoSalvo = produtoRepository.save(produto);
 
+        validarProduto(produto);
+
+        Produto produtoSalvo = produtoRepository.save(produto);
         return produtoMapper.toResponse(produtoSalvo);
     }
 
@@ -60,8 +66,9 @@ public class ProdutoServiceImpl implements ProdutoService {
         produtoExistente.setNome(produtoRequestDTO.getNome());
         produtoExistente.setPreco(produtoRequestDTO.getPreco());
 
-        Produto produtoAtualizado = produtoRepository.save(produtoExistente);
+        validarProduto(produtoExistente);
 
+        Produto produtoAtualizado = produtoRepository.save(produtoExistente);
         return produtoMapper.toResponse(produtoAtualizado);
     }
 
@@ -71,5 +78,20 @@ public class ProdutoServiceImpl implements ProdutoService {
             throw new ProdutoNaoEncontradoException("Produto com ID: " + id + " não encontrado.");
         }
         produtoRepository.deleteById(id);
+    }
+
+    private void validarProduto(Produto produto) {
+        List<String> erros = new ArrayList<>();
+
+        for (ProdutoValidator validator : validators) {
+            String erro = validator.validar(produto);
+            if (erro != null) {
+                erros.add(erro);
+            }
+        }
+
+        if (!erros.isEmpty()) {
+            throw new ValidacaoException(erros);
+        }
     }
 }
