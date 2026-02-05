@@ -99,17 +99,8 @@ public class ProdutoServiceComMensagensImpl implements ProdutoService {
     }
 
     private void validarProduto(Produto produto) {
-        List<String> erros = new ArrayList<>();
-
         for (ProdutoValidator validator : validators) {
-            String erro = validator.validar(produto);
-            if (erro != null) {
-                erros.add(erro);
-            }
-        }
-
-        if (!erros.isEmpty()) {
-            throw new ValidacaoException(erros);
+            validator.validar(produto);
         }
     }
 }
