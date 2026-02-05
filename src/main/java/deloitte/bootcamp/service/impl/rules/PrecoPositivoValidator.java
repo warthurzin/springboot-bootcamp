@@ -1,4 +1,4 @@
-package deloitte.bootcamp.service.impl;
+package deloitte.bootcamp.service.impl.rules;
 
 import deloitte.bootcamp.exception.PrecoInvalidoException;
 import deloitte.bootcamp.model.Produto;
