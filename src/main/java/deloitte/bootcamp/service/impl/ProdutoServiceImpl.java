@@ -3,7 +3,6 @@ package deloitte.bootcamp.service.impl;
 import deloitte.bootcamp.dto.ProdutoRequestDTO;
 import deloitte.bootcamp.dto.ProdutoResponseDTO;
 import deloitte.bootcamp.exception.ProdutoNaoEncontradoException;
-import deloitte.bootcamp.exception.ValidacaoException;
 import deloitte.bootcamp.mapper.ProdutoMapper;
 import deloitte.bootcamp.model.Produto;
 import deloitte.bootcamp.repository.ProdutoRepository;
