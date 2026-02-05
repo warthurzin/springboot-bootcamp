@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class PrecoPositivoValidator implements ProdutoValidator {
 
     @Override
-    public String validar(Produto produto) {
+    public void validar(Produto produto) {
         if (produto.getPreco() == null) {
             throw new PrecoInvalidoException("O preço do produto é obrigatório", null);
         }
@@ -17,7 +17,5 @@ public class PrecoPositivoValidator implements ProdutoValidator {
         if (produto.getPreco() <= 0) {
             throw new PrecoInvalidoException("O preço do produto é obrigatório", null);
         }
-
-        return null;
     }
 }
