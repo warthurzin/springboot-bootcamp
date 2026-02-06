@@ -50,4 +50,4 @@ jobs:
           app-name: 'bootcamp-produtos-arthurmarques'
           slot-name: 'Production'
           package: '*.jar'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DBC5BEABB23F4193BE2724C41BECCF86 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C0033DD210264B49B81F1C289C7DF686 }}
