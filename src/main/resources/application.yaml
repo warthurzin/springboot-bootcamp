@@ -12,7 +12,5 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-  documentation:
-    swagger:
-      ui-url: "http://localhost:8080/swagger-ui/index.html"
-      api-docs-url: "http://localhost:8080/v3/api-docs"
+  server:
+    forward-headers-strategy: framework
